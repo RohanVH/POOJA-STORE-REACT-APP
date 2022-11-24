@@ -10,7 +10,7 @@ exports.addToCart = catchAsyncErrors(async (req, res, next) => {
 
   if (isCartExist) {
     const product = req.body.cartItems.product;
-
+// console.log('dbbbbb',req.body.cartItems.product)
     let isProductExist = await Cart.findOne({
       user: req.user._id,
       "cartItems.product": product,

@@ -1,12 +1,15 @@
+
 const Order = require("../models/orderModels");
 const Product = require("../models/productModels");
 const ErrorHander = require("../utils/errorhandler");
 const catchAsyncErrors = require("../middleware/catchAsyncErrors");
 const User = require("../models/userModel");
 const Cart = require("../models/cartModel");
+const Address = require("../models/addressModel");
 
 //Create new Order
 exports.newOrder = catchAsyncErrors(async (req, res, next) => {
+  console.log("aaa", req.body);
   const {
     shippingInfo,
     orderItems,
@@ -36,7 +39,7 @@ exports.newOrder = catchAsyncErrors(async (req, res, next) => {
   }
 
   await Cart.deleteOne({ user: req.user._id });
- 
+
   res.status(201).json({
     success: true,
     order,
@@ -161,3 +164,50 @@ exports.deleteOrder = catchAsyncErrors(async (req, res, next) => {
     message: `Order is Deleted Successfully`,
   });
 });
+
+// Add Shipping Address
+
+exports.addShippingAddrz = catchAsyncErrors(async (req, res, next) => {
+  console.log("sdfgjfd");
+  console.log("user", req.user);
+  const {
+    addrs_type,
+    name,
+    phonenumber,
+    email,
+    pincode,
+    area,
+    city,
+    state_region,
+    country,
+  } = req.body;
+
+  const addAddrz = await Address.create({
+    delivery_address: [
+      {
+        addrs_type,
+        name,
+        phonenumber,
+        email,
+        pincode,
+        area,
+        city,
+        state_region,
+        country,
+      },
+    ],
+
+    user: req.user._id,
+  });
+
+  const userAddrz = await Address.find({ user: req.user._id });
+  if (!userAddrz) {
+    return next(new ErrorHander("Address is not found", 404));
+  }
+  console.log(addAddrz);
+  res.status(200).json({
+    success: true,
+    addAddrz,
+  });
+});
+

@@ -5,6 +5,7 @@ const ApiFeatures = require("../utils/apifeatures");
 const cloudinary = require("cloudinary");
 //Create product
 exports.createProduct = catchAsyncErrors(async (req, res, next) => {
+  // console.log('create product');
   let images = [];
   if (typeof req.body.images === "string") {
     images.push(req.body.images);
@@ -25,8 +26,10 @@ exports.createProduct = catchAsyncErrors(async (req, res, next) => {
   }
 
   req.body.images = imagesLinks;
-  req.body.seller = req.user.id;
+  // req.body.seller = req.user.id;
+  // console.log('pppp',req.body,'ppppp')
   const product = await Product.create(req.body);
+  // console.log("product", product);
 
   res.status(201).json({
     success: true,
@@ -56,6 +59,16 @@ exports.getAllproducts = catchAsyncErrors(async (req, res, next) => {
     filteredProductsCount,
   });
 });
+
+//Get all products without pagination
+
+// exports.getAllproducts = catchAsyncErrors(async (req, res, next) => {
+//   const products = await Product.find();
+//   res.status(200).json({
+//     success: true,
+//     products,
+//   });
+// });
 
 //Get Product Details
 exports.getProductDetails = catchAsyncErrors(async (req, res, next) => {
@@ -161,10 +174,11 @@ exports.removeProduct = catchAsyncErrors(async (req, res, next) => {
   if (!product) {
     return next(new ErrorHander("Product not found", 404));
   }
-const name = product.name;
-  await Product.updateOne({_id:req.params.id},{$set: {isRemoved : true}})
-
-
+  const name = product.name;
+  await Product.updateOne(
+    { _id: req.params.id },
+    { $set: { isRemoved: true } }
+  );
 
   res.status(200).json({
     success: true,

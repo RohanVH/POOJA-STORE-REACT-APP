@@ -19,7 +19,7 @@ exports.registerUser = catchAsyncError(async (req, res, next) => {
     width: 150,
     crop: "scale",
   });
-  console.log(req.file, "req.file");
+  // console.log(req.file, "req.file");
   const { name, email, phone, password } = req.body;
 
   const isUser = await User.findOne({ email });
@@ -81,10 +81,10 @@ exports.verifyRegisterOtp = catchAsyncError(async (req, res, next) => {
         }
       })
       .catch((err) => {
-        console.log(err, "=== error");
+        // console.log(err, "=== error");
       });
   } catch (error) {
-    console.log(error);
+    // console.log(error);
     res.status(400).json({ verified: false, msg: "Something went wrong ...." });
   }
 });
@@ -93,7 +93,7 @@ exports.verifyRegisterOtp = catchAsyncError(async (req, res, next) => {
 exports.resendOtp = catchAsyncError(async (req, res, next) => {
   // req.params.id
   const user = await User.findById(req.params.id, { phone: 1 });
-  console.log(user);
+  // console.log(user);
   if (!user) {
     return next(new ErrorHander("Invalid User", 403));
   }
@@ -150,8 +150,9 @@ exports.logout = catchAsyncError(async (req, res, next) => {
 
 //Forgot Password
 exports.forgotPassword = catchAsyncError(async (req, res, next) => {
-  console.log(req.body);
+  // console.log(req.body);
   const user = await User.findOne({ email: req.body.email });
+  // console.log(user,"{user}");
   if (!user) {
     return next(new ErrorHander("User not found", 404));
   }
@@ -287,7 +288,7 @@ exports.updateProfile = catchAsyncError(async (req, res, next) => {
   if (req.body.avatar !== "undefined" && req.body.avatar) {
     const user = await User.findById(req.user.id);
 
-    const imageId = user.avatar[0].public_id;
+    const imageId = user.avatar.public_id;
     await cloudinary.v2.uploader.destroy(imageId);
 
     const myCloud = await cloudinary.v2.uploader.upload(req.body.avatar, {
